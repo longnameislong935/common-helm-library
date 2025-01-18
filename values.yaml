@@ -68,14 +68,18 @@ workload:
     # runAsGroup: 556
     # runAsNonRoot: false
 
-  # -- Resource limits and requests for the main workload pod
-  resources: {}
-    # requests:
-      # cpu: 5m
-      # memory: 50Mi
-    # limits:
-      # cpu: 10m
-      # memory: 100Mi
+  # -- Resource configuration for the main workload pod
+  resources:
+    # -- Defines a preset configuration for resources. Either: `nano`, `micro`, `small`, `medium`, `large`, `xlarge`, `2xlarge`, `4xlarge`.
+    preset: ""
+    # -- Custom Resource Configuration: Define specific requests and limits. Use this when `preset` is not set.
+    custom: {}
+      # requests:
+      #   cpu: 5m
+      #   memory: 50Mi
+      # limits:
+      #   cpu: 10m
+      #   memory: 100Mi
 
   # -- Probes for main workload
   ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
