@@ -181,7 +181,8 @@ The following table lists the Kubernetes resources and their current support sta
 | Secret                  | ❗             |
 | Ingress                 | ✅             |
 | IngressClass            | ✅             |
-| PersistentVolumeClaim   | ⏳             |
+| PersistentVolume        | ✅             |
+| PersistentVolumeClaim   | ✅             |
 | ServiceAccount          | ✅             |
 | Role                    | ✅             |
 | RoleBinding             | ✅             |
@@ -195,6 +196,8 @@ The following table lists the Kubernetes resources and their current support sta
 | Certificate             | ❗             | Cert Manager & Reloader  | Limited Functionality
 | ClusterIssuer           | ❗             | Cert Manager & Reloader  | Limited Functionality
 | Cluster                 | ❗             | CloudNative-PG           | Limited Functionality
+| GrafanaDashboard        | ❗             | Grafana-Operator         | Limited Functionality
+| GrafanaDatasource       | ❗             | Grafana-Operator         | Limited Functionality
 
 > - ✅: Supported  
 > - ❗: Partial support (limited functionality or features)

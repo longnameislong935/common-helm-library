@@ -1,5 +1,40 @@
 # Changelog
 
+## [1.22.1](https://github.com/jamie-stinson/common-helm-library/compare/v1.22.0...v1.22.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* allow multiple dashboards in single chart ([#152](https://github.com/jamie-stinson/common-helm-library/issues/152)) ([dd35097](https://github.com/jamie-stinson/common-helm-library/commit/dd350971f170f3bfad73b10b58b96d9a9783c3ce))
+
+## [1.22.0](https://github.com/jamie-stinson/common-helm-library/compare/v1.21.1...v1.22.0) (2025-02-03)
+
+
+### Features
+
+* add grafana support ([#150](https://github.com/jamie-stinson/common-helm-library/issues/150)) ([41a20f8](https://github.com/jamie-stinson/common-helm-library/commit/41a20f866e690e64290054ebbb610bc69ef1196a))
+
+## [1.21.1](https://github.com/jamie-stinson/common-helm-library/compare/v1.21.0...v1.21.1) (2025-02-02)
+
+
+### Bug Fixes
+
+* include port protocol if provided in exposed ports of workload. ([#147](https://github.com/jamie-stinson/common-helm-library/issues/147)) ([293b536](https://github.com/jamie-stinson/common-helm-library/commit/293b53651287df5a1a6bc47ba08a560ad1c14cad))
+
+## [1.21.0](https://github.com/jamie-stinson/common-helm-library/compare/v1.20.1...v1.21.0) (2025-02-01)
+
+
+### Features
+
+* add extra objects ([#145](https://github.com/jamie-stinson/common-helm-library/issues/145)) ([9e14f36](https://github.com/jamie-stinson/common-helm-library/commit/9e14f3624bfd8e258ff8ac6279807440f0dd5c3e))
+
+## [1.20.1](https://github.com/jamie-stinson/common-helm-library/compare/v1.20.0...v1.20.1) (2025-01-30)
+
+
+### Bug Fixes
+
+* **statefulset:** service name ([#143](https://github.com/jamie-stinson/common-helm-library/issues/143)) ([7689775](https://github.com/jamie-stinson/common-helm-library/commit/768977575a5f8be0b5a86f9eaac802ac5fcc69de))
+
 ## [1.20.0](https://github.com/jamie-stinson/common-helm-library/compare/v1.19.2...v1.20.0) (2025-01-29)
 
 

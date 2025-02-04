@@ -438,6 +438,15 @@ issuer:
   type: {}
   spec: {}
 
+grafana:
+  datasource:
+    enabled: false
+    spec: {}
+  dashboard:
+    enabled: true
+    dashboards: []
+      # - name: ""
+      #   json: {}
 # -- REQUIRES: Prometheus
 serviceMonitor:
   enabled: false
@@ -469,3 +478,5 @@ postgres:
   replicas: {}
   version: {}
   size: {}
+
+extraObjects: []
