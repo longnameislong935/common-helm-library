@@ -273,6 +273,9 @@ service:
     #   protocol: TCP
     #   port: 80
 
+  # -- Optional labels
+  selector: {}
+
 expose:
   enabled: false
 
