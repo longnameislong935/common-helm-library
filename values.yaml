@@ -72,6 +72,10 @@ workload:
     # runAsGroup: 556
     # runAsNonRoot: false
 
+  podSecurityContext: {}
+    # fsGroup: 2000
+    # fsGroupChangePolicy: "OnRootMismatch"
+
   # -- Resource configuration for the main workload pod
   resources:
     # -- Defines a preset configuration for resources. Either: `nano`, `micro`, `small`, `medium`, `large`, `xlarge`, `2xlarge`, `4xlarge`.
