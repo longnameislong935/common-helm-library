@@ -41,6 +41,10 @@ workload:
     # - name: EXAMPLE_ENV
     #   value: "HELLO"
 
+  envsFromField: []
+    # - name: POD_NAME
+    #   fieldPath: metadata.name
+
   # -- Config Map to mount as Environment Variable into pod
   envsConfigMap: []
     # - name: EXAMPLE_ENV
@@ -67,6 +71,10 @@ workload:
     # runAsUser: 556
     # runAsGroup: 556
     # runAsNonRoot: false
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+    # fsGroupChangePolicy: "OnRootMismatch"
 
   # -- Resource configuration for the main workload pod
   resources:
@@ -180,7 +188,9 @@ workload:
 
   # -- Assign custom TopologySpreadConstraints rules to the main workload
   # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
-  topologySpreadConstraints: []
+  topologySpreadConstraints: {}
+    # preset: "" # Currently just 'spread-across-nodes'
+    # custom: []
 
   # -- Deployment or StatefulSet strategy to be added to the main workload
   strategy: {}
@@ -272,6 +282,11 @@ service:
     # - name: web
     #   protocol: TCP
     #   port: 80
+    #   hostIP: 127.0.0.1
+    #   hostPort: 1234
+
+  # -- Optional labels
+  selector: {}
 
 expose:
   enabled: false
@@ -290,16 +305,18 @@ expose:
 configMap:
   enabled: false
 
-  # -- Annotations for Config Map
-  annotations: {}
+  configMaps: []
+    # - name: ""
+      # -- Annotations for Config Map
+      # annotations: {}
 
-  # -- Labels for Config Map
-  labels: {}
+      # -- Labels for Config Map
+      # labels: {}
 
-  # -- List of config data for the Config Map
-  data: {}
-  #   example.conf: |
-  #     listen 80
+      # -- List of config data for the Config Map
+      # data:
+      #   example.conf: |
+      #     listen 80
 
 serviceAccount:
   enabled: false
@@ -443,10 +460,35 @@ grafana:
     enabled: false
     spec: {}
   dashboard:
-    enabled: true
+    enabled: false
+    cacheDuration: ""
+    resyncPeriod: ""
     dashboards: []
       # - name: ""
       #   json: {}
+      #   url: ""
+      #   folder: ""
+  folder:
+    enabled: false
+    resyncPeriod: ""
+    folders: []
+      # - name: ""
+      #   title: ""
+      #   parentFolder: ""
+      #   permissions: |
+      #     {
+      #       "items": [
+      #         {
+      #           "role": "Admin",
+      #           "permission": 4
+      #         },
+      #         {
+      #           "role": "Editor",
+      #           "permission": 2
+      #         }
+      #       ]
+      #     }
+
 # -- REQUIRES: Prometheus
 serviceMonitor:
   enabled: false

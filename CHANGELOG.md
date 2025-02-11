@@ -1,5 +1,79 @@
 # Changelog
 
+## [1.29.0](https://github.com/jamie-stinson/common-helm-library/compare/v1.28.0...v1.29.0) (2025-02-10)
+
+
+### Features
+
+* add support for multiple configmaps ([#173](https://github.com/jamie-stinson/common-helm-library/issues/173)) ([18562a7](https://github.com/jamie-stinson/common-helm-library/commit/18562a7fd190ecd03453442d3364ba18cb6fa046))
+
+## [1.28.0](https://github.com/jamie-stinson/common-helm-library/compare/v1.27.0...v1.28.0) (2025-02-10)
+
+
+### Features
+
+* add topology presets ([#170](https://github.com/jamie-stinson/common-helm-library/issues/170)) ([0b337e9](https://github.com/jamie-stinson/common-helm-library/commit/0b337e9bfc994042cb76d702e75679277e31ef3e))
+
+
+### Bug Fixes
+
+* environment variable value quote ([#172](https://github.com/jamie-stinson/common-helm-library/issues/172)) ([f075665](https://github.com/jamie-stinson/common-helm-library/commit/f075665d93e997b693a87f22914a1f64fd1bd987))
+
+## [1.27.0](https://github.com/jamie-stinson/common-helm-library/compare/v1.26.0...v1.27.0) (2025-02-08)
+
+
+### Features
+
+* add host port ([#168](https://github.com/jamie-stinson/common-helm-library/issues/168)) ([47a8de6](https://github.com/jamie-stinson/common-helm-library/commit/47a8de64c456749c08130c7cc524705d3d90ee47))
+
+## [1.26.0](https://github.com/jamie-stinson/common-helm-library/compare/v1.25.0...v1.26.0) (2025-02-07)
+
+
+### Features
+
+* pod security context ([#166](https://github.com/jamie-stinson/common-helm-library/issues/166)) ([81ce8ac](https://github.com/jamie-stinson/common-helm-library/commit/81ce8acf2ab060bee3d50914be7b139c477e7311))
+
+## [1.25.0](https://github.com/jamie-stinson/common-helm-library/compare/v1.24.2...v1.25.0) (2025-02-07)
+
+
+### Features
+
+* **workload:** add environment variable from field ([#164](https://github.com/jamie-stinson/common-helm-library/issues/164)) ([714ace2](https://github.com/jamie-stinson/common-helm-library/commit/714ace2ee1b3eadf04e16d20898641357eca7d10))
+
+## [1.24.2](https://github.com/jamie-stinson/common-helm-library/compare/v1.24.1...v1.24.2) (2025-02-06)
+
+
+### Bug Fixes
+
+* **extraobjects:** separator ([#162](https://github.com/jamie-stinson/common-helm-library/issues/162)) ([5d0620b](https://github.com/jamie-stinson/common-helm-library/commit/5d0620b492a510755e03876eb7b4c290ae8d03a9))
+
+## [1.24.1](https://github.com/jamie-stinson/common-helm-library/compare/v1.24.0...v1.24.1) (2025-02-06)
+
+
+### Bug Fixes
+
+* add missing pod ip env variable ([#160](https://github.com/jamie-stinson/common-helm-library/issues/160)) ([2f9db0a](https://github.com/jamie-stinson/common-helm-library/commit/2f9db0aabca100d5d57709e7ce7cfcfaecb33887))
+
+## [1.24.0](https://github.com/jamie-stinson/common-helm-library/compare/v1.23.0...v1.24.0) (2025-02-05)
+
+
+### Features
+
+* **grafana:** add folders ([#159](https://github.com/jamie-stinson/common-helm-library/issues/159)) ([d54df3e](https://github.com/jamie-stinson/common-helm-library/commit/d54df3ed9b02f5a8db4570348b0b87985c954345))
+* **grafana:** allow url dashboards ([#157](https://github.com/jamie-stinson/common-helm-library/issues/157)) ([3633d0b](https://github.com/jamie-stinson/common-helm-library/commit/3633d0b99327d69584be379205ffbee6d2283823))
+
+## [1.23.0](https://github.com/jamie-stinson/common-helm-library/compare/v1.22.1...v1.23.0) (2025-02-05)
+
+
+### Features
+
+* **service:** allow selector override ([#156](https://github.com/jamie-stinson/common-helm-library/issues/156)) ([6bce66c](https://github.com/jamie-stinson/common-helm-library/commit/6bce66c52c8a8ff5a5ec2225a5a2333bb67f0aa2))
+
+
+### Bug Fixes
+
+* **ingress:** correctly apply labels and annotations ([#154](https://github.com/jamie-stinson/common-helm-library/issues/154)) ([575e928](https://github.com/jamie-stinson/common-helm-library/commit/575e9280b5b8973a4c8ddeb4306971bb4213fcf4))
+
 ## [1.22.1](https://github.com/jamie-stinson/common-helm-library/compare/v1.22.0...v1.22.1) (2025-02-03)
 
 

@@ -31,10 +31,20 @@ env:
   - name: NODE_NAME
     valueFrom:
       fieldRef:
-        fieldPath: spec.nodeName  
+        fieldPath: spec.nodeName
+  - name: POD_IP
+    valueFrom:
+      fieldRef:
+        fieldPath: status.podIP
   {{- range .envs }}
   - name: {{ .name }}
-    value: {{ .value }}
+    value: {{ .value | quote }}
+  {{- end }}
+  {{- range .envsFromField }}
+  - name: {{ .name }}
+    valueFrom:
+      fieldRef:
+        fieldPath: {{ .fieldPath }}
   {{- end }}
   {{- range .envsConfigMap }}
   - name: {{ .name }}
