@@ -316,9 +316,6 @@ expose:
     #   port: 80
     #   nodePort: 30443
 
-  # -- Optional labels
-  selector: {}
-
 configMap:
   enabled: false
 
