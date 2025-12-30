@@ -34,4 +34,4 @@ jobs:
       - name: Push chart to Docker Hub
         run: |
           pkg=$(helm package . | awk '/Successfully packaged chart/ {print $NF}')
-          helm push "${pkg}" oci://ghcr.io/longnameislong935/common-helm-library
+          helm push "${pkg}" oci://ghcr.io/jamie-stinson/common-helm-library
