@@ -4,18 +4,65 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ $.Release.Name }}-database
+  name: {{ $.Release.Name }}-cnpg
+  annotations:
+      {{- if .recovery.enabled }}
+      argocd.argoproj.io/sync-wave: {{ .recovery.syncWave | default "3" | quote }}
+      {{- end }}
 spec:
-  instances: {{ .replicas }}
-  imageName: ghcr.io/cloudnative-pg/postgresql:{{ .version }}
+  instances: {{ .replicas | default 1 }}
+  imageName: {{ .imageName }}
   bootstrap:
+    {{- if .recovery.enabled }}
+    recovery:
+      source: {{ $.Release.Name }}-source
+    {{- else }}
     initdb:
-      database: {{ $.Release.Name }}
-      owner: {{ $.Release.Name }}
-  primaryUpdateStrategy: unsupervised
-  enableSuperuserAccess: false
+      database: {{ .dbName | default $.Release.Name }}
+      owner: {{ .owner | default $.Release.Name }}
+      {{- if .secretName }}
+      secret:
+        name: {{ .secretName }}
+      {{- end }}
+    {{- end }}
+  {{- if .recovery.enabled }}
+  externalClusters:
+    - name: {{ $.Release.Name }}-source
+      plugin:
+        name: {{ .recovery.plugin.Name }}
+        parameters:
+          barmanObjectName: {{ .recovery.s3.ObjectName }}
+          serverName: {{ $.Release.Name }}
+  {{- end }}
+  enableSuperuserAccess: {{ .enableSuperuser | default true }}
+  {{- if .superuserSecretName }}
+  superuserSecret:
+    name: {{ .superuserSecretName }}
+  {{- end }}
   storage:
-    size: {{ .size }}
+    pvcTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ .size | default "25Gi" }}
+      storageClassName: {{ .storageClassName }}
+      volumeMode: Filesystem
+  walStorage:
+    pvcTemplate:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ .walSize | default "5Gi" }}
+      storageClassName: {{ .walStorageClassName | default .storageClassName }}
+  primaryUpdateStrategy: unsupervised
+  resources:
+    requests:
+      cpu: {{ .resources.requests.cpu | default "10m" }}
+      memory: {{ .resources.requests.memory | default "1Gi" }}
+    limits:
+      memory: {{ .resources.limits.memory | default "2Gi" }}
 ---
 {{- end }}
 {{- end }}
