@@ -569,6 +569,9 @@ postgres:
       memory: "1Gi"
     limits:
       memory: "2Gi"
+  skipEmptyWalArchiveCheck:
+    # -- Allow restore from and backup to the same s3 bucket
+    enabled: false
   # -- Recovery configuration
   recovery:
     # -- Enable recovery mode (requires existing S3 backup)
