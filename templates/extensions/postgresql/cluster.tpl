@@ -16,6 +16,7 @@ spec:
     {{- if .recovery.enabled }}
     recovery:
       source: {{ $.Release.Name }}-source
+      database: {{ .dbName | default $.Release.Name }}
     {{- else }}
     initdb:
       database: {{ .dbName | default $.Release.Name }}
@@ -25,6 +26,15 @@ spec:
         name: {{ .secretName }}
       {{- end }}
     {{- end }}
+  
+  {{- /* Automated GitOps Permission Fix */}}
+  postInitApplicationSQL:
+    - |
+      GRANT ALL ON SCHEMA public TO "{{ .owner | default $.Release.Name }}";
+      ALTER SCHEMA public OWNER TO "{{ .owner | default $.Release.Name }}";
+      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "{{ .owner | default $.Release.Name }}";
+      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "{{ .owner | default $.Release.Name }}";
+
   {{- if .recovery.enabled }}
   externalClusters:
     - name: {{ $.Release.Name }}-source

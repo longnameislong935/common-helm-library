@@ -543,9 +543,9 @@ postgres:
   replicas: 1
   # -- Postgres image to use
   imageName: ""
-  # -- Database name to create on init (defaults to Release Name)
+  # -- Database name to create or restore (defaults to Release Name)
   dbName: ""
-  # -- Owner of the initial database (defaults to Release Name)
+  # -- Owner of the database and recipient of public schema permissions (defaults to Release Name)
   owner: ""
   # -- Secret name containing app credentials for the database owner
   secretName: ""
