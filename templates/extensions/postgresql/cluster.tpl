@@ -6,25 +6,16 @@ kind: Cluster
 metadata:
   name: {{ $.Release.Name }}-cnpg
   annotations:
-    {{- if .recovery.enabled }}
-    argocd.argoproj.io/sync-wave: {{ .recovery.syncWave | default "3" | quote }}
-    {{- end }}
+      {{- if .recovery.enabled }}
+      argocd.argoproj.io/sync-wave: {{ .recovery.syncWave | default "3" | quote }}
+      {{- end }}
 spec:
   instances: {{ .replicas | default 1 }}
   imageName: {{ .imageName }}
-  
   bootstrap:
     {{- if .recovery.enabled }}
     recovery:
       source: {{ $.Release.Name }}-source
-      database: {{ .dbName | default $.Release.Name }}
-      # SQL to run after the restore is complete
-      postInitApplicationSQL:
-        - |
-          GRANT ALL ON SCHEMA public TO "{{ .owner | default $.Release.Name }}";
-          ALTER SCHEMA public OWNER TO "{{ .owner | default $.Release.Name }}";
-          ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "{{ .owner | default $.Release.Name }}";
-          ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "{{ .owner | default $.Release.Name }}";
     {{- else }}
     initdb:
       database: {{ .dbName | default $.Release.Name }}
@@ -33,15 +24,7 @@ spec:
       secret:
         name: {{ .secretName }}
       {{- end }}
-      # SQL to run after the fresh database is created
-      postInitApplicationSQL:
-        - |
-          GRANT ALL ON SCHEMA public TO "{{ .owner | default $.Release.Name }}";
-          ALTER SCHEMA public OWNER TO "{{ .owner | default $.Release.Name }}";
-          ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "{{ .owner | default $.Release.Name }}";
-          ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "{{ .owner | default $.Release.Name }}";
     {{- end }}
-
   {{- if .recovery.enabled }}
   externalClusters:
     - name: {{ $.Release.Name }}-source
@@ -51,13 +34,11 @@ spec:
           barmanObjectName: {{ .recovery.s3.ObjectName }}
           serverName: {{ $.Release.Name }}
   {{- end }}
-
   enableSuperuserAccess: {{ .enableSuperuser | default true }}
   {{- if .superuserSecretName }}
   superuserSecret:
     name: {{ .superuserSecretName }}
   {{- end }}
-
   storage:
     pvcTemplate:
       accessModes:
@@ -67,7 +48,6 @@ spec:
           storage: {{ .size | default "25Gi" }}
       storageClassName: {{ .storageClassName }}
       volumeMode: Filesystem
-
   walStorage:
     pvcTemplate:
       accessModes:
@@ -76,7 +56,6 @@ spec:
         requests:
           storage: {{ .walSize | default "5Gi" }}
       storageClassName: {{ .walStorageClassName | default .storageClassName }}
-
   primaryUpdateStrategy: unsupervised
   resources:
     requests:
