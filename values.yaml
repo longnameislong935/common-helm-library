@@ -536,68 +536,11 @@ serviceMonitor:
   # -- Prometheus ServiceMonitor tlsConfig
   tlsConfig: {}
 
-# -- REQUIRES: cnpg + barman cloud plugin
 postgres:
-  # -- Enable PostgreSQL Cluster (CloudNativePG)
   enabled: false
-  # -- Number of instances (replicas)
-  replicas: 1
-  # -- Postgres image to use
-  imageName: ""
-  # -- Database name to create on init (defaults to Release Name)
-  dbName: ""
-  # -- Owner of the initial database (defaults to Release Name)
-  owner: ""
-  # -- Secret name containing app credentials for the database owner
-  secretName: ""
-  # -- Enable superuser access
-  enableSuperuser: true
-  # -- Secret name for the superuser credentials
-  superuserSecretName: ""
-  # -- Storage Settings
-  # -- Persistent Volume size for data
-  size: "25Gi"
-  # -- Storage class for data PVCs
-  storageClassName: ""
-  # -- Persistent Volume size for WALs
-  walSize: "10Gi"
-  # -- Storage class for WAL PVCs (defaults to storageClassName)
-  walStorageClassName: ""
-  # -- Resource requests and limits
-  resources:
-    requests:
-      cpu: "50m"
-      memory: "1Gi"
-    limits:
-      memory: "2Gi"
-  # -- Recovery configuration
-  recovery:
-    # -- Enable recovery mode (requires existing S3 backup)
-    enabled: false
-    # -- Sync wave for the Cluster during recovery
-    syncWave: "3"
-    plugin:
-      Name: "barman-cloud.cloudnative-pg.io"
-    s3:
-      # -- Path/Object name in the S3 bucket
-      ObjectName: ""
-  # -- Shared Backup settings
-  backup:
-    # -- Method used for backups (e.g. plugin)
-    method: "plugin"
-    pluginConfiguration:
-      # -- Name of the Barman plugin
-      name: "barman-cloud.cloudnative-pg.io"
-  # -- Scheduled Backup configuration
-  scheduledBackup:
-    # -- Enable automated daily backups
-    enabled: false
-    # -- If not provided defaults to taking the length of the app name and uses it as the minute after 3am
-    schedule: ""
-    # -- Run a backup immediately if no backup exists on creation
-    immediate: true
-    # -- Optional: Override sync wave (defaults to 4 if recovery is enabled)
-    syncWave: "4"
+  replicas: {}
+  version: {}
+  size: {}
 
 versionChecker:
   imageOverride: false
