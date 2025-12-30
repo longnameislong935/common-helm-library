@@ -19,6 +19,9 @@ Main entrypoint for the common library chart. It will render all underlying temp
   {{- include "common-helm-library.resources.persistentVolumeClaim" . }}
   {{- include "common-helm-library.resources.extraObjects" . }}
   {{- include "common-helm-library.extensions.postgres.cluster" . }}
+  {{- include "common-helm-library.extensions.postgres.scheduledBackup" . }}
+  {{- include "common-helm-library.extensions.postgres.guardrailJob" . }}
+  {{- include "common-helm-library.extensions.postgres.objectstore" . }}
   {{- include "common-helm-library.extensions.prometheus.serviceMonitor" . }}
   {{- include "common-helm-library.extensions.certManager.certificate" . }}
   {{- include "common-helm-library.extensions.certManager.issuer" . }}
