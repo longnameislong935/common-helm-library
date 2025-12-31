@@ -7,12 +7,20 @@ metadata:
   name: {{ $.Release.Name }}
   annotations:
       argocd.argoproj.io/sync-wave: {{ .recovery.syncWave | default "3" | quote }}
-      {{- if .skipEmptyWalArchiveCheck.enabled }}
+      {{- if ((.skipEmptyWalArchiveCheck).enabled) }}
       cnpg.io/skipEmptyWalArchiveCheck: "enabled"
       {{- end }}
 spec:
   instances: {{ .replicas | default 1 }}
   imageName: {{ .imageName }}
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      {{- if ((.isWALArchiver).enabled) }}
+      isWALArchiver: true
+      {{- end }}
+      parameters:
+        barmanObjectName: {{ .recovery.s3.ObjectName | default (printf "%s-store" $.Release.Name) }}
+        serverName: {{ $.Release.Name }}
   bootstrap:
     {{- if .recovery.enabled }}
     recovery:
