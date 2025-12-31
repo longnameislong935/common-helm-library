@@ -6,9 +6,7 @@ kind: Cluster
 metadata:
   name: {{ $.Release.Name }}
   annotations:
-      {{- if .recovery.enabled }}
       argocd.argoproj.io/sync-wave: {{ .recovery.syncWave | default "3" | quote }}
-      {{- end }}
       {{- if .skipEmptyWalArchiveCheck.enabled }}
       cnpg.io/skipEmptyWalArchiveCheck: "enabled"
       {{- end }}
