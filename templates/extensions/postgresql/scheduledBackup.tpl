@@ -22,7 +22,7 @@ spec:
     name: {{ .backup.pluginConfiguration.name | default "barman-cloud.cloudnative-pg.io" }}
   {{- end }}
   cluster:
-    name: {{ $.Release.Name }}-cnpg
+    name: {{ $.Release.Name }}
 ---
 {{- end }}
 {{- end }}
