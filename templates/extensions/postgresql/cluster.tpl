@@ -19,6 +19,8 @@ spec:
     {{- if .recovery.enabled }}
     recovery:
       source: {{ $.Release.Name }}-source
+      database: {{ .dbName | default $.Release.Name }}
+      owner: {{ .owner | default $.Release.Name }}
     {{- else }}
     initdb:
       database: {{ .dbName | default $.Release.Name }}
