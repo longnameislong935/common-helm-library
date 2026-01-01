@@ -35,6 +35,11 @@ spec:
       secret:
         name: {{ .secretName }}
       {{- end }}
+      {{- /* Add postInitSQL here */ -}}
+      {{- if .postInitSQL }}
+      postInitSQL:
+        {{- toYaml .postInitSQL | nindent 8 }}
+      {{- end }}
     {{- end }}
   {{- if .recovery.enabled }}
   externalClusters:

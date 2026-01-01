@@ -549,6 +549,11 @@ postgres:
   owner: ""
   # -- Secret name containing app credentials for the database owner
   secretName: ""
+  # -- Custom SQL to run after the cluster has been initialised.
+  # This runs as the superuser. Useful for creating extra databases or extensions.
+  # @default -- []
+  postInitSQL: []
+    # - CREATE DATABASE "radarr-log" OWNER radarr
   # -- Enable superuser access
   enableSuperuser: true
   # -- Secret name for the superuser credentials
