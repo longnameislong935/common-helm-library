@@ -24,7 +24,7 @@ spec:
 
   image: {{ .imageName | default "mariadb:11.4" }}
   replicas: {{ .replicas | default 1 }}
-  dbName: {{ .dbName | default "netlockrmm" }}
+  database: {{ .dbName | default "default" }}
 
   # 3. Enable Prometheus metrics sidecar (Port 9104)
   metrics:
