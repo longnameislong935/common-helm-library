@@ -606,6 +606,76 @@ postgres:
     # -- Optional: Override sync wave (defaults to 4 if recovery is enabled)
     syncWave: "4"
 
+
+# -- MariaDB Cluster Configuration (MariaDB Operator)
+mariadb:
+  # -- Enable MariaDB Cluster
+  enabled: false
+  # -- Number of instances (replicas). 1 for standalone, 3 for Galera HA.
+  replicas: 1
+  # -- MariaDB image to use
+  imageName: "mariadb:11.4"
+  # -- Database name to create on initialisation
+  dbName: ""
+  
+  # -- Password Management
+  # -- Secret name to store the root password.
+  # If the secret is empty or does not exist, the operator will 
+  # automatically generate a random password and populate it.
+  rootPasswordSecretName: ""
+
+  # -- Monitoring
+  metrics:
+    # -- Enable Prometheus metrics exporter sidecar (Port 9104)
+    enabled: true
+
+  # -- Storage Settings
+  # -- Persistent Volume size for data
+  size: "25Gi"
+  # -- Storage class for data PVCs. 
+  # Note: pvcRetentionPolicy is set to 'Delete' to mimic CNPG cleanup.
+  storageClassName: ""
+  
+  # -- Resource requests and limits
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "1Gi"
+    limits:
+      memory: "2Gi"
+
+  # -- S3 Connection settings (Used for both Backup and Recovery)
+  s3:
+    # -- Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY
+    secretName: ""
+    # -- S3 compatible endpoint URL
+    endpoint: ""
+    # -- S3 bucket name
+    bucket: ""
+    # -- S3 region (defaults to 'garage' for local S3)
+    region: "garage"
+
+  # -- Recovery configuration
+  recovery:
+    # -- Enable recovery mode. If true, the operator will bootstrap 
+    # the database from the S3 bucket before starting.
+    enabled: false
+    # -- Run a pre-sync check to ensure S3 data exists (ArgoCD Guardrail)
+    checkExists: true
+    # -- Sync wave for the MariaDB resource during recovery
+    syncWave: "10"
+
+  # -- Scheduled Backup configuration
+  backup:
+    # -- Enable automated daily physical backups to S3
+    enabled: false
+    # -- Daily cron schedule (default 3 AM)
+    schedule: "0 3 * * *"
+    # -- Number of days to retain backups in S3
+    retentionDays: 30
+    # -- Optional: Override sync wave (defaults to 11)
+    syncWave: "11"
+
 versionChecker:
   imageOverride: false
 
