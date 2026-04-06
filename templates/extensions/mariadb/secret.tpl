@@ -7,7 +7,8 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 type: Opaque
-data: {} # The operator will fill this automatically
+stringData:
+  root-password: "" 
 ---
 {{- end }}
 {{- end }}
