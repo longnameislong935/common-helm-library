@@ -8,26 +8,47 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: {{ .recovery.syncWave | default "10" | quote }}
 spec:
-  # This is the instruction for the Operator to auto-generate the password
+  # --- Identity & Image ---
+  image: {{ .imageName | default "mariadb:11.4" }}
+  replicas: {{ .replicas | default 1 }}
+  database: {{ .dbName | default $.Release.Name }}
+
+  # --- Auth Strategy ---
   rootPasswordSecretKeyRef:
     name: {{ .rootPasswordSecretName | default (printf "%s-mariadb-root" $.Release.Name) }}
     key: root-password
     generate: true
 
-  image: {{ .imageName | default "mariadb:11.4" }}
-  replicas: {{ .replicas | default 1 }}
-  database: {{ .dbName | default "netlockrmm" }}
+  # --- Networking ---
+  service:
+    type: ClusterIP
 
-  # Resources are typically top-level in the v1alpha1 spec
+  # --- Workload Resources ---
   resources:
     {{- toYaml .resources | nindent 4 }}
 
-  # Since you have a separate storage.tpl, ensure your MariaDB CR 
-  # references the existing volume or uses the same storageClassName.
+  # --- Storage ---
   storage:
     storageClassName: {{ .storageClassName }}
     size: {{ .size | default "25Gi" }}
+    {{- if .pvcRetentionPolicy }}
+    pvcRetentionPolicy:
+      whenDeleted: {{ .pvcRetentionPolicy.whenDeleted | default "Delete" }}
+      whenScaled: {{ .pvcRetentionPolicy.whenScaled | default "Delete" }}
+    {{- end }}
 
+  # --- Recovery & Bootstrap ---
+  {{- if .recovery.enabled }}
+  bootstrapFrom:
+    s3:
+      bucket: {{ .s3.bucket }}
+      endpoint: {{ .s3.endpoint }}
+      region: {{ .s3.region | default "garage" }}
+      credentialsSecretRef:
+        name: {{ .s3.secretName }}
+  {{- end }}
+
+  # --- Database Configuration ---
   myCnf: |
     [mariadb]
     bind-address=0.0.0.0
