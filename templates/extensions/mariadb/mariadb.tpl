@@ -20,8 +20,8 @@ spec:
     generate: true
 
   # --- Networking ---
-  service:
-    type: ClusterIP
+  #service:
+  #  type: ClusterIP
 
   # --- Workload Resources ---
   resources:
