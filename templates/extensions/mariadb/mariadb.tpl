@@ -8,6 +8,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: {{ .recovery.syncWave | default "10" | quote }}
 spec:
+  # This is the instruction for the Operator to auto-generate the password
   rootPasswordSecretKeyRef:
     name: {{ .rootPasswordSecretName | default (printf "%s-mariadb-root" $.Release.Name) }}
     key: root-password
@@ -17,23 +18,16 @@ spec:
   replicas: {{ .replicas | default 1 }}
   database: {{ .dbName | default "netlockrmm" }}
 
-  # On some versions, CPU/Memory are top-level fields in spec
+  # Resources are typically top-level in the v1alpha1 spec
   resources:
     {{- toYaml .resources | nindent 4 }}
 
-  # This tells the operator to handle the Service creation
-  service:
-    type: ClusterIP
-    headless: true
-
+  # Since you have a separate storage.tpl, ensure your MariaDB CR 
+  # references the existing volume or uses the same storageClassName.
   storage:
-    size: {{ .size | default "25Gi" }}
     storageClassName: {{ .storageClassName }}
-    pvcRetentionPolicy:
-      whenDeleted: Delete
-      whenScaled: Delete
+    size: {{ .size | default "25Gi" }}
 
-  # Any custom DB logic goes here
   myCnf: |
     [mariadb]
     bind-address=0.0.0.0
