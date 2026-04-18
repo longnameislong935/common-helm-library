@@ -131,7 +131,7 @@ workload:
   #     failureThreshold: 3
   #     initialDelaySeconds: 30
 
- storage: {}
+  storage: {}
   ## configMap: Mounts data from a ConfigMap.
   # - name: my-configmap-volume
   #   type: configMap
