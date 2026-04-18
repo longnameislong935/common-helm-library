@@ -14,6 +14,9 @@ volumeMounts:
   {{- range $validVolumeMounts }}
   - name: {{ .name }}
     mountPath: {{ .mountPath }}
+    {{- with .subPath }}
+    subPath: {{ . }}
+    {{- end }}
     {{- with .readOnly }}
     readOnly: {{ . }}
     {{- end }}

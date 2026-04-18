@@ -131,60 +131,69 @@ workload:
   #     failureThreshold: 3
   #     initialDelaySeconds: 30
 
-  storage: {}
-    ## configMap
-    # - name: my-configmap-volume
-    #   type: configMap
-    #   mountPath: /path/to/mount/container
-    #   configMapName: my-configmap
-    #   items:
-    #     - key: key1
-    #       path: /path/to/mount/container
-    ## secret
-    # - name: my-secret-volume
-    #   type: secret
-    #   optional: false
-    #   mountPath: /path/to/mount/container
-    #   secretName: my-secret
-    #   items:
-    #     - key: key1
-    #       path: /path/to/mount/container
-    ## emptyDir
-    # - name: my-emptydir-volume
-    #   type: emptyDir
-    #   mountPath: /path/to/mount/container
-    #   sizeLimit: 1Gi
-    #   readOnly: false
-    #   ramDisk: false
-    ## hostPath
-    # - name: my-hostpath-volume
-    #   type: hostPath
-    #   mountPath: /path/to/mount/container
-    #   hostPath: /path/to/mount/host
-    #   readOnly: false
-    ## downardAPI
-    # - name: my-downwardapi-volume
-    #   type: downwardAPI
-    #   mountPath: /path/to/mount/container
-    #   items:
-    #     - path: /path/to/mount/for/field1
-    #       fieldRef:
-    #         fieldPath: field1
-    ## pvc
-    # - name: my-pvc-volume
-    #   type: pvc
-    #   mountPath: /path/to/mount/container
-    #   claimName: "test"
-    #   readOnly: false
-    ## volumeClaimTemplate - StatefulSet Only
-    # - name: my-pvc-template-volume
-    #   type: pvcTemplate
-    #   mountPath: /path/to/mount/container
-    #   accessModes:
-    #     - "ReadWriteOnce"
-    #   storageClass: "example"
-    #   size: "5Gi"
-    #   readOnly: false
+ storage: {}
+  ## configMap: Mounts data from a ConfigMap.
+  # - name: my-configmap-volume
+  #   type: configMap
+  #   mountPath: /path/to/mount/container/file.conf
+  #   subPath: file.conf                       # Use to mount a single key as a file
+  #   configMapName: my-configmap
+  #   items:
+  #     - key: key1
+  #       path: file.conf
+
+  ## secret: Mounts data from a Secret.
+  # - name: my-secret-volume
+  #   type: secret
+  #   optional: false
+  #   mountPath: /path/to/mount/container/passwd
+  #   subPath: passwd                          # Use to mount a single key as a file
+  #   secretName: my-secret
+  #   items:
+  #     - key: key1
+  #       path: passwd
+
+  ## emptyDir: Temporary storage (cache/logs) local to the pod.
+  # - name: my-emptydir-volume
+  #   type: emptyDir
+  #   mountPath: /path/to/mount/container
+  #   sizeLimit: 1Gi
+  #   readOnly: false
+  #   ramDisk: false
+
+  ## hostPath: Mounts a path directly from the host node.
+  # - name: my-hostpath-volume
+  #   type: hostPath
+  #   mountPath: /path/to/mount/container
+  #   hostPath: /path/to/mount/host
+  #   readOnly: false
+
+  ## downwardAPI: Projects pod metadata (labels, annotations) as files.
+  # - name: my-downwardapi-volume
+  #   type: downwardAPI
+  #   mountPath: /path/to/mount/container
+  #   items:
+  #     - path: pod_name
+  #       fieldRef:
+  #         fieldPath: metadata.name
+
+  ## pvc: Mounts an existing PersistentVolumeClaim.
+  # - name: my-pvc-volume
+  #   type: pvc
+  #   mountPath: /path/to/mount/container
+  #   subPath: data-folder                     # Use if mounting a specific subdir of a PVC
+  #   claimName: "test"
+  #   readOnly: false
+
+  ## volumeClaimTemplate: Dynamically creates PVCs (StatefulSet Only).
+  # - name: my-pvc-template-volume
+  #   type: pvcTemplate
+  #   mountPath: /path/to/mount/container
+  #   accessModes:
+  #     - "ReadWriteOnce"
+  #   storageClass: "example"
+  #   size: "5Gi"
+  #   readOnly: false
 
   # -- Termination grace period seconds for container lifecycle hook
   terminationGracePeriodSeconds: ""
