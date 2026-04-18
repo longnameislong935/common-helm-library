@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0](https://github.com/longnameislong935/common-helm-library/compare/v2.0.0...v2.1.0) (2026-04-18)
+
+
+### Features
+
+* cnpg backup and restore job for cluster ([3c12752](https://github.com/longnameislong935/common-helm-library/commit/3c1275266e3cb14eb622a716811024b073ed0de5))
+* cnpg cluster and backup/restore job ([31512fb](https://github.com/longnameislong935/common-helm-library/commit/31512fb3f7aa57ed654de883c3eeb4ba553d330d))
+* cnpg cluster and backup/restore using barman cloud plugin ([8a1944c](https://github.com/longnameislong935/common-helm-library/commit/8a1944cd8499779ded0674650c064ca130f1c677))
+* Merge pull request [#4](https://github.com/longnameislong935/common-helm-library/issues/4) from longnameislong935/cnpg ([31512fb](https://github.com/longnameislong935/common-helm-library/commit/31512fb3f7aa57ed654de883c3eeb4ba553d330d))
+* Merge pull request [#6](https://github.com/longnameislong935/common-helm-library/issues/6) from longnameislong935/cnpg ([293e011](https://github.com/longnameislong935/common-helm-library/commit/293e01121e639b64cdff5b9d2d6fa8d8751eec71))
+* Update Chart.yaml ([293e011](https://github.com/longnameislong935/common-helm-library/commit/293e01121e639b64cdff5b9d2d6fa8d8751eec71))
+
 ## [2.0.0](https://github.com/jamie-stinson/common-helm-library/compare/v1.37.0...v2.0.0) (2025-09-23)
 
 
