@@ -13,6 +13,12 @@ metadata:
 spec:
   instances: {{ .replicas | default 1 }}
   imageName: {{ .imageName }}
+  {{- /* Pass-through for the postgresql stanza, e.g. shared_preload_libraries,
+         parameters, pg_hba, extensions. Required for modules like vchord. */ -}}
+  {{- with .postgresql }}
+  postgresql:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       {{- if ((.isWALArchiver).enabled) }}
@@ -39,6 +45,11 @@ spec:
       {{- if .postInitSQL }}
       postInitSQL:
         {{- toYaml .postInitSQL | nindent 8 }}
+      {{- end }}
+      {{- /* Runs against the *application* database (e.g. CREATE EXTENSION). */ -}}
+      {{- if .postInitApplicationSQL }}
+      postInitApplicationSQL:
+        {{- toYaml .postInitApplicationSQL | nindent 8 }}
       {{- end }}
     {{- end }}
   {{- if .recovery.enabled }}

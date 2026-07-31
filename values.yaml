@@ -550,10 +550,26 @@ postgres:
   # -- Secret name containing app credentials for the database owner
   secretName: ""
   # -- Custom SQL to run after the cluster has been initialised.
-  # This runs as the superuser. Useful for creating extra databases or extensions.
+  # This runs as the superuser against the `postgres` database.
+  # Useful for creating extra databases or cluster-level roles.
   # @default -- []
   postInitSQL: []
     # - CREATE DATABASE "radarr-log" OWNER radarr
+  # -- Custom SQL to run after init against the *application* database.
+  # Use this to create extensions inside the app db (e.g. Immich's vchord).
+  # @default -- []
+  postInitApplicationSQL: []
+    # - CREATE EXTENSION IF NOT EXISTS vchord CASCADE
+    # - CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE
+  # -- Pass-through for the CNPG `.spec.postgresql` stanza. Set anything CNPG
+  # supports here: shared_preload_libraries, parameters, pg_hba, etc.
+  # Modules like vchord MUST be preloaded to work.
+  # @default -- {}
+  postgresql: {}
+    # shared_preload_libraries:
+    #   - vchord.so
+    # parameters:
+    #   max_connections: "200"
   # -- Enable superuser access
   enableSuperuser: true
   # -- Secret name for the superuser credentials
