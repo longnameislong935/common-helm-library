@@ -579,6 +579,17 @@ postgres:
     #   - vchord.so
     # parameters:
     #   max_connections: "200"
+  # -- Pass-through for the CNPG `.spec.managed` stanza (declarative role mgmt).
+  # e.g. grant the app role SUPERUSER so it can create untrusted extensions.
+  # @default -- {}
+  managed: {}
+    # roles:
+    #   - name: myapp
+    #     ensure: present
+    #     login: true
+    #     superuser: true
+    #     passwordSecret:
+    #       name: myapp-cnpg-app
   # -- Enable superuser access
   enableSuperuser: true
   # -- Secret name for the superuser credentials

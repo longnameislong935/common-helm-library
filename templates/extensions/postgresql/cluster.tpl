@@ -19,6 +19,12 @@ spec:
   postgresql:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- /* Pass-through for declarative role management (managed.roles), e.g.
+         granting the app role SUPERUSER so it can create untrusted extensions. */ -}}
+  {{- with .managed }}
+  managed:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       {{- if ((.isWALArchiver).enabled) }}
