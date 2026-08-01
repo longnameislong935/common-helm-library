@@ -18,11 +18,13 @@ spec:
             - name: RECOVERY_ENABLED
               value: {{ .recovery.enabled | quote }}
             - name: AWS_ACCESS_KEY_ID
-              valueFrom: { secretKeyRef: { name: {{ .s3.secretName }}, key: "ACCESS_KEY_ID" } }
+              valueFrom: { secretKeyRef: { name: {{ .s3.secretName }}, key: {{ .s3.accessKeyIdKey | default "accessKeyId" | quote }} } }
             - name: AWS_SECRET_ACCESS_KEY
-              valueFrom: { secretKeyRef: { name: {{ .s3.secretName }}, key: "ACCESS_SECRET_KEY" } }
+              valueFrom: { secretKeyRef: { name: {{ .s3.secretName }}, key: {{ .s3.secretAccessKeyKey | default "secretAccessKey" | quote }} } }
+            # Operator wants a bare host:port endpoint; aws-cli needs a scheme,
+            # so build the URL here from s3.tls (http for Garage, https otherwise).
             - name: ENDPOINT
-              value: {{ .s3.endpoint | quote }}
+              value: {{ printf "%s://%s" (ternary "https" "http" (.s3.tls | default false)) .s3.endpoint | quote }}
             - name: BUCKET
               value: {{ .s3.bucket | quote }}
             - name: AWS_DEFAULT_REGION

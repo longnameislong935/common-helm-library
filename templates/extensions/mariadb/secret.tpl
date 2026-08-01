@@ -1,18 +1,13 @@
 {{- define "common-helm-library.extensions.mariadb.secret" }}
-{{- if .Values.mariadb.enabled }}
-{{- with .Values.mariadb }}
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ .rootPasswordSecretName | default (printf "%s-mariadb-root" $.Release.Name) }}
-  namespace: {{ $.Release.Namespace }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-type: Opaque
-# We leave 'data' or 'stringData' empty. 
-# This allows the MariaDB Operator to 'own' the lifecycle of the actual password string.
-data: {} 
----
-{{- end }}
-{{- end }}
+{{- /*
+  Intentionally renders nothing.
+
+  The MariaDB CR uses `rootPasswordSecretKeyRef ... generate: true`, so the
+  operator CREATES and POPULATES the root-password secret itself. Pre-creating
+  an empty secret here broke that: the operator won't write the key into a
+  secret it didn't create, and ArgoCD kept self-healing it back to `data: {}`,
+  wiping the generated password -> "couldn't find key root-password".
+
+  Let the operator own the secret entirely. Nothing to render.
+*/ -}}
 {{- end }}
