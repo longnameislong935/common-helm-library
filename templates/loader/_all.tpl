@@ -26,6 +26,8 @@ Main entrypoint for the common library chart. It will render all underlying temp
   {{- include "common-helm-library.extensions.mariadb.guardrailJob" . }}
   {{- include "common-helm-library.extensions.mariadb.instance" . }}
   {{- include "common-helm-library.extensions.mariadb.backup" . }}
+  {{- include "common-helm-library.extensions.mariadb.physicalBackup" . }}
+  {{- include "common-helm-library.extensions.mariadb.pitr" . }}
   {{- include "common-helm-library.extensions.prometheus.serviceMonitor" . }}
   {{- include "common-helm-library.extensions.certManager.certificate" . }}
   {{- include "common-helm-library.extensions.certManager.issuer" . }}

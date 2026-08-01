@@ -43,9 +43,32 @@ spec:
     enabled: true
   {{- end }}
 
-  # --- Recovery & Bootstrap ---
+  # --- Point-in-time recovery (binlog archival) ---
+  {{- if .pitr.enabled }}
+  # Linking the PITR object makes the operator enable binary logs and run the
+  # binlog-archival sidecar -> continuous, to-the-second recovery.
+  pointInTimeRecoveryRef:
+    name: {{ $.Release.Name }}-pitr
+  {{- end }}
+
+  # --- Recovery & Bootstrap (restore into a brand-new instance only) ---
   {{- if .recovery.enabled }}
   bootstrapFrom:
+    {{- if .pitr.enabled }}
+    # Restore the base PhysicalBackup and replay binlogs to targetRecoveryTime.
+    pointInTimeRecoveryRef:
+      name: {{ $.Release.Name }}-pitr
+    {{- if .recovery.targetRecoveryTime }}
+    targetRecoveryTime: {{ .recovery.targetRecoveryTime }}
+    {{- end }}
+    stagingStorage:
+      persistentVolumeClaim:
+        resources:
+          requests:
+            storage: {{ .recovery.stagingSize | default (.size | default "25Gi") }}
+        accessModes:
+          - ReadWriteOnce
+    {{- else }}
     s3:
       bucket: {{ .s3.bucket }}
       # endpoint must be a bare host:port (NO http:// scheme) for the operator.
@@ -62,6 +85,7 @@ spec:
         key: {{ .s3.secretAccessKeyKey | default "secretAccessKey" }}
       tls:
         enabled: {{ .s3.tls | default false }}
+    {{- end }}
   {{- end }}
 
   # --- Database Configuration ---

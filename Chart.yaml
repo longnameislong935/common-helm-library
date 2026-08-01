@@ -1,6 +1,6 @@
 apiVersion: v2
 name: common-helm-library
 description: A Helm library chart
-version: 935.1.32
+version: 935.1.33
 maintainers:
   - name: longnameislong935

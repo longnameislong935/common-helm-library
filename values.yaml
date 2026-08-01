@@ -701,25 +701,68 @@ mariadb:
     # -- Use TLS to reach the endpoint. false for plain-HTTP Garage.
     tls: false
 
-  # -- Recovery configuration
+  # -- Recovery configuration (restore into a BRAND-NEW instance only)
   recovery:
-    # -- Enable recovery mode. If true, the operator will bootstrap 
+    # -- Enable recovery mode. If true, the operator will bootstrap
     # the database from the S3 bucket before starting.
     enabled: false
     # -- Run a pre-sync check to ensure S3 data exists (ArgoCD Guardrail)
     checkExists: true
     # -- Sync wave for the MariaDB resource during recovery
     syncWave: "10"
+    # -- PITR only (pitr.enabled): RFC3339 time to recover to, e.g.
+    # "2025-06-17T08:07:00Z". Omit to replay to the last recoverable point.
+    targetRecoveryTime: ""
+    # -- PITR only: staging PVC size for restore (defaults to the DB `size`)
+    stagingSize: ""
 
-  # -- Scheduled Backup configuration
+  # -- Scheduled logical (mariadb-dump) Backup configuration
   backup:
-    # -- Enable automated daily physical backups to S3
+    # -- Enable automated logical backups to S3
     enabled: false
     # -- Daily cron schedule (default 3 AM)
     schedule: "0 3 * * *"
     # -- Number of days to retain backups in S3
     retentionDays: 30
     # -- Optional: Override sync wave (defaults to 11)
+    syncWave: "11"
+
+  # -- Physical (mariadb-backup) base snapshots to S3. Required for PITR.
+  # Requires operator >= v26.3.0.
+  physicalBackup:
+    enabled: false
+    # -- Cron for base snapshots (binlogs cover the gaps, so this can be sparse)
+    schedule: "0 */6 * * *"
+    # -- Take a base backup immediately on creation
+    immediate: true
+    # -- Retention as a Duration (e.g. 720h = 30d)
+    maxRetention: "720h"
+    # -- Per-backup timeout
+    timeout: "1h"
+    # -- none | bzip2 | gzip
+    compression: "gzip"
+    # -- Replica | PreferReplica (PreferReplica falls back to primary if single-node)
+    target: "PreferReplica"
+    # -- S3 key prefix for base snapshots (keep distinct from pitr/backup)
+    prefix: "physical"
+    # -- Optional dedicated staging PVC size (defaults to node emptyDir if empty)
+    stagingSize: ""
+    stagingStorageClassName: ""
+    syncWave: "11"
+
+  # -- Point-in-time recovery: continuous binary-log archival to S3. Enabling
+  # this links the MariaDB (pointInTimeRecoveryRef) so the operator turns on
+  # binlogs + the archival sidecar. Requires physicalBackup.enabled.
+  pitr:
+    enabled: false
+    # -- How often binlogs are flushed to S3 (~ the recovery-point gap)
+    archiveTimeout: "5m"
+    # -- none | bzip2 | gzip (immutable once set)
+    compression: "gzip"
+    # -- true = error if the exact target can't be met; false = replay to last recoverable
+    strictMode: false
+    # -- S3 key prefix for archived binlogs
+    prefix: "binlog"
     syncWave: "11"
 
 versionChecker:
