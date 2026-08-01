@@ -682,14 +682,24 @@ mariadb:
 
   # -- S3 Connection settings (Used for both Backup and Recovery)
   s3:
-    # -- Secret name containing ACCESS_KEY_ID and ACCESS_SECRET_KEY
+    # -- Secret containing the S3 credentials (keys below, default accessKeyId /
+    # secretAccessKey). The operator reads them via SecretKeySelectors.
     secretName: ""
-    # -- S3 compatible endpoint URL
+    # -- Key in the secret holding the access key id
+    accessKeyIdKey: "accessKeyId"
+    # -- Key in the secret holding the secret access key
+    secretAccessKeyKey: "secretAccessKey"
+    # -- S3 endpoint as a bare host:port — NO http:// scheme (e.g.
+    # garage-s3.garage.svc.cluster.local:3900). Pair with tls:false for Garage.
     endpoint: ""
     # -- S3 bucket name
     bucket: ""
+    # -- Optional folder/prefix within the bucket
+    prefix: ""
     # -- S3 region (defaults to 'garage' for local S3)
     region: "garage"
+    # -- Use TLS to reach the endpoint. false for plain-HTTP Garage.
+    tls: false
 
   # -- Recovery configuration
   recovery:
