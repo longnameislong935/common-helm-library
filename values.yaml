@@ -706,8 +706,14 @@ mariadb:
     # -- Enable recovery mode. If true, the operator will bootstrap
     # the database from the S3 bucket before starting.
     enabled: false
-    # -- Run a pre-sync check to ensure S3 data exists (ArgoCD Guardrail)
+    # -- Guardrail Job. When recovery.enabled=true, it blocks the sync unless a
+    # base backup exists (so a restore can't start against an empty bucket).
+    # When recovery.enabled=false it now does NOTHING (a running DB's own
+    # backups no longer trip it), so it's safe to leave on.
     checkExists: true
+    # -- Restrict the guardrail's "does a backup exist?" check to this S3 prefix
+    # (e.g. "physical" for PITR base backups). Empty = the whole bucket.
+    checkPrefix: ""
     # -- Sync wave for the MariaDB resource during recovery
     syncWave: "10"
     # -- PITR only (pitr.enabled): RFC3339 time to recover to, e.g.
