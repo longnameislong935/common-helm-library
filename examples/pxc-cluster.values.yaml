@@ -1,0 +1,123 @@
+# =============================================================================
+# Per-app Percona XtraDB Cluster — values for common-helm-library
+# Copy this file, rename it per app, and edit the ★ lines. Everything else
+# inherits sensible defaults from the library's values.yaml.
+#
+# Prerequisites (once per cluster):
+#   1. pxc-operator is running (cluster-wide).
+#   2. A Secret exists in THIS namespace with EXACTLY these keys:
+#        AWS_ACCESS_KEY_ID  /  AWS_SECRET_ACCESS_KEY
+#      (or set pxc.s3.createSecret: true below to have the chart make it).
+#   3. The target bucket exists in Garage.
+#
+# The release name + namespace come from your Argo Application (or `helm -n`).
+# =============================================================================
+
+namespace: "myapp-db"                 # ★ target namespace
+
+pxc:
+  enabled: true
+
+  # Blank -> "<release>-pxc". Set explicitly if you want a fixed name.
+  clusterName: ""                     # ★ (optional)
+
+  # ---------------------------------------------------------------- topology
+  pxc:
+    size: 1                           # single-node homelab. Bump to 3 for HA Galera.
+    storageClassName: ""              # ★ storage class for data PVCs
+    storage: "20Gi"                   # ★ data volume
+    autoRecovery: true                # auto-recover after an unclean shutdown
+    resources:                        # trimmed to match your CNPG footprint
+      requests:
+        cpu: "50m"
+        memory: "1Gi"
+      limits:
+        memory: "2Gi"
+    # Extra my.cnf if needed:
+    # configuration: |
+    #   [mysqld]
+    #   max_connections=500
+
+  haproxy:
+    enabled: true                     # stable endpoint: <release>-pxc-haproxy
+    size: 1                           # 1 for homelab. Set enabled:false to drop the pod.
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+      limits:
+        memory: "256Mi"
+
+  # Use ProxySQL instead of HAProxy? enable one, not both:
+  # proxysql:
+  #   enabled: true
+  #   size: 1
+
+  # Required: sizes above are below Galera's HA minimums (3 PXC / 2 proxy),
+  # so the operator needs these toggles to allow a single-node cluster.
+  unsafeFlags:
+    pxcSize: true
+    proxySize: true
+
+  # ---------------------------------------------------- S3 / Garage (shared)
+  s3:
+    credentialsSecret: "garage-pxc-s3"                                  # ★ secret name (AWS_* keys)
+    endpointUrl: "http://garage-s3.garage.svc.cluster.local:3900"       # ★ scheme + host:port
+    bucket: "myapp-mysql-backups"                                       # ★ bucket
+    region: "garage"
+    forcePathStyle: true              # required for Garage/MinIO
+    verifyTLS: false                  # false = plain-HTTP Garage
+    preflight: true                   # gate: don't create the cluster until the bucket is reachable
+    # --- optional: let the chart create the credentials Secret instead ---
+    # createSecret: true
+    # accessKeyId: ""                 # ★ (prefer SOPS/sealed-secrets over plaintext)
+    # secretAccessKey: ""             # ★
+
+  # -------------------------------------------------- scheduled full backups
+  backup:
+    enabled: true
+    schedule: "0 2 * * *"             # ★ cron (daily 02:00 here)
+    # NOTE: retentionCount is IGNORED while pitr.enabled=true (retention breaks
+    # the binlog chain). Clean up old backups with a Garage bucket lifecycle rule.
+    retentionCount: 7                 # only applies if PITR is off
+    prefix: "full"                    # S3 key prefix (kept distinct from binlog)
+
+  # ------------------------------------------- point-in-time recovery (binlog)
+  pitr:
+    enabled: true                     # continuous binlog upload -> dedicated storage
+    prefix: "binlog"
+    # bucket: ""                      # defaults to s3.bucket (prefix keeps them apart)
+    timeBetweenUploads: 60
+
+  # --------------------------------------------------- metrics (VictoriaMetrics)
+  # Exposes a mysqld_exporter sidecar on 9104 for your vmagent to scrape.
+  # Add the scrape jobs from examples/pxc-vmagent-scrape.yaml to your vmagent
+  # ConfigMap. HAProxy (8404) and PITR (8080) are already exposed by the operator.
+  metrics:
+    mysqld:
+      enabled: true
+
+  # PMM is NOT used (you're on VictoriaMetrics). Leave disabled.
+  # pmm:
+  #   enabled: true
+  #   serverHost: "pmm.monitoring.svc.cluster.local"
+
+  # ---------------------------------------------------------- restore/recovery
+  # Leave disabled for a normal install. Flip on ONLY to bootstrap-from-backup.
+  recovery:
+    enabled: false
+    # Restore from an existing backup object:
+    # backupName: "myapp-db-pxc-backup"
+    # ...OR restore straight from S3 (folder name in the bucket):
+    # backupDestination: "2026-08-08-020000-full"
+    checkExists: true                 # guardrail: block restore if no backup in S3
+    checkPrefix: "full"
+    # Point-in-time target:
+    # pitr:
+    #   enabled: true
+    #   type: "date"                  # latest | date | transaction
+    #   date: "2026-08-08 12:00:00"
+
+  # On-demand one-off backup (creates a single PerconaXtraDBClusterBackup):
+  # onDemandBackup:
+  #   enabled: true

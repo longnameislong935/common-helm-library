@@ -18,7 +18,7 @@ kind: Secret
 metadata:
   name: {{ .s3.credentialsSecret }}
   annotations:
-    argocd.argoproj.io/sync-wave: {{ .s3.syncWave | default "9" | quote }}
+    argocd.argoproj.io/sync-wave: {{ .s3.syncWave | default "1" | quote }}
 type: Opaque
 stringData:
   AWS_ACCESS_KEY_ID: {{ .s3.accessKeyId | quote }}

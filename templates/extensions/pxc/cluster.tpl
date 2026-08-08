@@ -61,6 +61,30 @@ spec:
           requests:
             storage: {{ .pxc.storage | default "8Gi" }}
     gracePeriod: {{ .pxc.gracePeriod | default 600 }}
+    {{- /* mysqld_exporter sidecar so vmagent's pod-SD can scrape MySQL metrics
+       on 9104 (no PMM needed). Uses the operator-managed `monitor` user. */}}
+    {{- if .metrics.mysqld.enabled }}
+    sidecars:
+      - name: mysqld-exporter
+        image: {{ .metrics.mysqld.image | default "prom/mysqld-exporter:v0.15.1" }}
+        ports:
+          - containerPort: {{ .metrics.mysqld.port | default 9104 }}
+            name: metrics
+        env:
+          - name: MYSQLD_EXPORTER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .secretsName | default (printf "%s-secrets" (.clusterName | default (printf "%s-pxc" $.Release.Name))) }}
+                key: monitor
+        args:
+          - "--mysqld.username=monitor"
+          - "--mysqld.address=localhost:3306"
+          {{- range .metrics.mysqld.extraArgs }}
+          - {{ . | quote }}
+          {{- end }}
+        resources:
+          {{- toYaml (.metrics.mysqld.resources | default (dict "requests" (dict "cpu" "25m" "memory" "32Mi") "limits" (dict "memory" "64Mi"))) | nindent 10 }}
+    {{- end }}
 
   # --- Proxy layer: HAProxy (default) or ProxySQL ---
   haproxy:
@@ -160,10 +184,15 @@ spec:
       - name: {{ .backup.name | default "daily-backup" | quote }}
         schedule: {{ .backup.schedule | default "0 0 * * *" | quote }}
         storageName: {{ .backup.storageName | default "s3-backup" }}
+        {{- /* Retention is INCOMPATIBLE with PITR: deleting full backups breaks
+           the binlog chain. When pitr is on, omit retention and rely on a Garage
+           bucket lifecycle rule for cleanup instead. */}}
+        {{- if not .pitr.enabled }}
         retention:
           type: count
           count: {{ .backup.retentionCount | default 5 }}
           deleteFromStorage: {{ .backup.deleteFromStorage | default true }}
+        {{- end }}
       {{- end }}
     {{- end }}
 ---

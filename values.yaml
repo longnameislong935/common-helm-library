@@ -854,6 +854,21 @@ pxc:
     enabled: true
     image: "percona/fluentbit:5.0.6-1"
 
+  # -- Metrics. This chart exposes endpoints; scraping is done by your vmagent's
+  # static promscrape config (see examples/pxc-vmagent-scrape.yaml). No PMM.
+  metrics:
+    # -- Adds a mysqld_exporter sidecar on the PXC pods (port 9104), matching the
+    # way your mariadb-operator exposes 9104 for pod-SD discovery.
+    mysqld:
+      enabled: false
+      image: "prom/mysqld-exporter:v0.15.1"
+      port: 9104
+      # -- Extra exporter flags, e.g. TLS: ["--tls.insecure-skip-verify"]
+      extraArgs: []
+      resources: {}
+    # HAProxy already exposes Prometheus metrics on 8404, and the PITR pod on
+    # 8080 — nothing to add here, just add scrape jobs for them (see the example).
+
   # -- PMM client agent (needs a running PMM server)
   pmm:
     enabled: false
@@ -878,11 +893,17 @@ pxc:
     forcePathStyle: true
     # -- Verify TLS on the endpoint. false for plain-HTTP Garage.
     verifyTLS: false
+    # -- Preflight gate: a pre-sync Job (wave 2, before the cluster) that fails
+    # the sync unless the bucket is reachable with these creds. Pauses cluster
+    # creation on a misconfigured/unreachable Garage target.
+    preflight: true
+    preflightRetries: 3
     # -- Optionally let the chart create the credentials Secret (else bring your own).
     createSecret: false
     accessKeyId: ""
     secretAccessKey: ""
-    syncWave: "9"
+    # Low wave so a chart-created Secret exists before the guardrail (wave 2).
+    syncWave: "1"
 
   # -- Scheduled full backups
   backup:

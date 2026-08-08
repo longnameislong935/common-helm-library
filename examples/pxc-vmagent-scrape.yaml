@@ -1,0 +1,78 @@
+# =============================================================================
+# vmagent scrape_configs for a Percona XtraDB Cluster
+#
+# Paste these job blocks into your victoria-metrics-agent ConfigMap
+# (scrape.yaml -> scrape_configs:), alongside your mariadb-pods / postgres-pods
+# jobs. Comment out any target you don't want — that's your per-part toggle.
+#
+# Prereq for pxc-mysqld: pxc.metrics.mysqld.enabled=true in the cluster values
+# (adds the mysqld_exporter sidecar on 9104). HAProxy (8404) and PITR (8080)
+# are exposed by the operator already.
+#
+# NOTE: label values assume the PXC operator's standard labels. Verify once with:
+#   kubectl get pods -n <ns> --show-labels
+# =============================================================================
+
+# --- MySQL metrics (mysqld_exporter sidecar, 9104) — mirrors your mariadb-pods job
+- job_name: 'pxc-mysqld'
+  kubernetes_sd_configs:
+    - role: pod
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_managed_by]
+      action: keep
+      regex: percona-xtradb-cluster-operator
+    - source_labels: [__meta_kubernetes_pod_container_port_number]
+      regex: '9104'
+      action: keep
+    - source_labels: [__meta_kubernetes_pod_ip]
+      target_label: __address__
+      replacement: '$1:9104'
+    - source_labels: [__meta_kubernetes_namespace]
+      target_label: namespace
+    - source_labels: [__meta_kubernetes_pod_name]
+      target_label: pod
+    - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_instance]
+      target_label: cluster
+
+# --- HAProxy metrics (Prometheus exporter on 8404, on by default)
+- job_name: 'pxc-haproxy'
+  kubernetes_sd_configs:
+    - role: pod
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_managed_by]
+      action: keep
+      regex: percona-xtradb-cluster-operator
+    - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+      action: keep
+      regex: haproxy
+    # Address the metrics port directly (works even if 8404 isn't a declared containerPort).
+    - source_labels: [__meta_kubernetes_pod_ip]
+      target_label: __address__
+      replacement: '$1:8404'
+    - source_labels: [__meta_kubernetes_namespace]
+      target_label: namespace
+    - source_labels: [__meta_kubernetes_pod_name]
+      target_label: pod
+    - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_instance]
+      target_label: cluster
+
+# --- PITR binlog-collector metrics (8080) — only exists when pitr.enabled=true
+- job_name: 'pxc-pitr'
+  kubernetes_sd_configs:
+    - role: pod
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_managed_by]
+      action: keep
+      regex: percona-xtradb-cluster-operator
+    - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+      action: keep
+      regex: pitr
+    - source_labels: [__meta_kubernetes_pod_ip]
+      target_label: __address__
+      replacement: '$1:8080'
+    - source_labels: [__meta_kubernetes_namespace]
+      target_label: namespace
+    - source_labels: [__meta_kubernetes_pod_name]
+      target_label: pod
+    - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_instance]
+      target_label: cluster
