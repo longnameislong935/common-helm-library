@@ -771,6 +771,173 @@ mariadb:
     prefix: "binlog"
     syncWave: "11"
 
+pxc:
+  # -- Enable a Percona XtraDB Cluster (requires the pxc-operator to be running)
+  enabled: false
+
+  # -- CR schema version. Keep aligned with the running operator version.
+  crVersion: "1.20.0"
+
+  # -- Cluster name. Defaults to "<release>-pxc".
+  clusterName: ""
+  # -- Sync wave for the cluster CR
+  syncWave: "10"
+
+  # -- Optional: name of the Secret holding system user passwords (operator
+  # generates one if omitted)
+  secretsName: ""
+
+  # -- Rolling upgrade behaviour
+  updateStrategy: "SmartUpdate"
+  # -- apply: disabled | recommended | latest | <version>. `disabled` pins images.
+  upgradeApply: "disabled"
+  upgradeSchedule: "0 4 * * *"
+  versionServiceEndpoint: "https://check.percona.com"
+
+  tls:
+    # -- Operator-managed TLS (uses cert-manager if present, else self-signed)
+    enabled: true
+
+  # -- Galera requires >=3 PXC nodes and >=2 proxy nodes. For single-node dev,
+  # drop sizes AND set the matching flags here, e.g.:
+  #   unsafeFlags: { pxcSize: true, proxySize: true, tls: false }
+  unsafeFlags: {}
+
+  # -- Database (Galera) nodes
+  pxc:
+    size: 3
+    image: "percona/percona-xtradb-cluster:8.4.8-8.1"
+    autoRecovery: true
+    # -- Raw my.cnf ([mysqld] etc.) appended to the config
+    configuration: ""
+    storageClassName: ""
+    storage: "8Gi"
+    resources:
+      requests:
+        cpu: "600m"
+        memory: "1Gi"
+    # -- Spread replicas across nodes by this topology key
+    antiAffinityTopologyKey: "kubernetes.io/hostname"
+    # -- Optional advanced nodeAffinity (rendered under pxc.affinity.advanced)
+    nodeAffinity: {}
+    pdbMaxUnavailable: 1
+    gracePeriod: 600
+
+  # -- HAProxy proxy layer (default). Mutually exclusive with proxysql.
+  haproxy:
+    enabled: true
+    size: 2
+    image: "percona/haproxy:2.8.18-1"
+    resources:
+      requests:
+        cpu: "600m"
+        memory: "1Gi"
+    antiAffinityTopologyKey: "kubernetes.io/hostname"
+    pdbMaxUnavailable: 1
+    gracePeriod: 30
+
+  # -- ProxySQL proxy layer (alternative to HAProxy). Enable only one.
+  proxysql:
+    enabled: false
+    size: 2
+    image: "percona/proxysql2:2.7.3-1.3"
+    storageClassName: ""
+    storage: "2Gi"
+    resources:
+      requests:
+        cpu: "600m"
+        memory: "1Gi"
+    antiAffinityTopologyKey: "kubernetes.io/hostname"
+
+  # -- Fluent Bit log collector sidecar
+  logcollector:
+    enabled: true
+    image: "percona/fluentbit:5.0.6-1"
+
+  # -- PMM client agent (needs a running PMM server)
+  pmm:
+    enabled: false
+    image: "percona/pmm-client:3.8.0"
+    serverHost: "monitoring-service"
+
+  # -- XtraBackup image used for backup/restore jobs
+  backupImage: "percona/percona-xtrabackup:8.4.0-5.1"
+
+  # -- S3 connection (Garage). Shared by full backups, binlog PITR, and restore.
+  s3:
+    # -- Secret with EXACTLY the keys AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.
+    credentialsSecret: ""
+    # -- Full endpoint URL WITH scheme (http:// for plain-HTTP Garage), e.g.
+    # http://garage-s3.garage.svc.cluster.local:3900
+    endpointUrl: ""
+    # -- S3 bucket for backups
+    bucket: ""
+    # -- S3 region (arbitrary for Garage)
+    region: "garage"
+    # -- Path-style addressing — REQUIRED for Garage/MinIO
+    forcePathStyle: true
+    # -- Verify TLS on the endpoint. false for plain-HTTP Garage.
+    verifyTLS: false
+    # -- Optionally let the chart create the credentials Secret (else bring your own).
+    createSecret: false
+    accessKeyId: ""
+    secretAccessKey: ""
+    syncWave: "9"
+
+  # -- Scheduled full backups
+  backup:
+    enabled: false
+    # -- Storage name registered under spec.backup.storages
+    storageName: "s3-backup"
+    # -- S3 key prefix for full backups (keep distinct from binlog prefix)
+    prefix: "full"
+    name: "daily-backup"
+    schedule: "0 0 * * *"
+    retentionCount: 5
+    deleteFromStorage: true
+    # -- Optional: provide a full list of schedule entries to override the single default
+    schedules: []
+    syncWave: "11"
+
+  # -- Point-in-time recovery: continuous binlog upload to a DEDICATED storage.
+  pitr:
+    enabled: false
+    storageName: "s3-binlog"
+    # -- Bucket for binlogs (defaults to s3.bucket; prefix keeps them separate)
+    bucket: ""
+    prefix: "binlog"
+    timeBetweenUploads: 60
+    timeoutSeconds: 60
+
+  # -- On-demand backup (creates a single PerconaXtraDBClusterBackup)
+  onDemandBackup:
+    enabled: false
+    storageName: ""
+    syncWave: "11"
+
+  # -- Restore / recovery into this cluster
+  recovery:
+    enabled: false
+    # -- Restore from an existing PerconaXtraDBClusterBackup object (by name).
+    # If empty, restores directly from S3 using backupDestination below.
+    backupName: ""
+    # -- Backup folder name in the bucket -> destination s3://<bucket>/<backupDestination>
+    backupDestination: ""
+    syncWave: "10"
+    # -- Guardrail Job: when recovery.enabled=true, blocks the sync unless backup
+    # data exists in S3. When false it does nothing, so it's safe to leave on.
+    checkExists: true
+    checkPrefix: ""
+    # -- Point-in-time recovery target
+    pitr:
+      enabled: false
+      # -- latest | date | transaction
+      type: "latest"
+      # -- For type=date, RFC-ish "yyyy-mm-dd hh:mm:ss"
+      date: ""
+      # -- For type=transaction, a GTID
+      gtid: ""
+
 versionChecker:
   imageOverride: false
 

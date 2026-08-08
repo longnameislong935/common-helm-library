@@ -28,6 +28,11 @@ Main entrypoint for the common library chart. It will render all underlying temp
   {{- include "common-helm-library.extensions.mariadb.backup" . }}
   {{- include "common-helm-library.extensions.mariadb.physicalBackup" . }}
   {{- include "common-helm-library.extensions.mariadb.pitr" . }}
+  {{- include "common-helm-library.extensions.pxc.secret" . }}
+  {{- include "common-helm-library.extensions.pxc.guardrailJob" . }}
+  {{- include "common-helm-library.extensions.pxc.cluster" . }}
+  {{- include "common-helm-library.extensions.pxc.backup" . }}
+  {{- include "common-helm-library.extensions.pxc.restore" . }}
   {{- include "common-helm-library.extensions.prometheus.serviceMonitor" . }}
   {{- include "common-helm-library.extensions.certManager.certificate" . }}
   {{- include "common-helm-library.extensions.certManager.issuer" . }}
