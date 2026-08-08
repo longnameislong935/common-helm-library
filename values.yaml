@@ -790,6 +790,14 @@ pxc:
   # -- Sync wave for the cluster CR
   syncWave: "10"
 
+  # -- Application database to create on deploy. Empty = none (the operator does
+  # NOT create one). When set, a PostSync Job connects as root and runs
+  # CREATE DATABASE IF NOT EXISTS (idempotent).
+  database: ""
+  # -- Image with a mysql client for the init Job
+  databaseInitImage: "mysql:8.4"
+  databaseInitRetries: 10
+
   # -- Optional: name of the Secret holding system user passwords (operator
   # generates one if omitted)
   secretsName: ""

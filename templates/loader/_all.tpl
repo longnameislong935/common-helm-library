@@ -31,6 +31,7 @@ Main entrypoint for the common library chart. It will render all underlying temp
   {{- include "common-helm-library.extensions.pxc.secret" . }}
   {{- include "common-helm-library.extensions.pxc.guardrailJob" . }}
   {{- include "common-helm-library.extensions.pxc.cluster" . }}
+  {{- include "common-helm-library.extensions.pxc.databaseInit" . }}
   {{- include "common-helm-library.extensions.pxc.backup" . }}
   {{- include "common-helm-library.extensions.pxc.restore" . }}
   {{- include "common-helm-library.extensions.prometheus.serviceMonitor" . }}
