@@ -778,6 +778,13 @@ pxc:
   # -- CR schema version. Keep aligned with the running operator version.
   crVersion: "1.20.0"
 
+  # -- Init image for the DB pods. Because the operator is deployed via this
+  # library (container not named `percona-xtradb-cluster-operator`), its
+  # auto-discovery fails, so the chart sets this explicitly. Defaults to
+  # percona/percona-xtradb-cluster-operator:<crVersion>; override if you use a
+  # different registry/tag for the operator image.
+  initImage: ""
+
   # -- Cluster name. Defaults to "<release>-pxc".
   clusterName: ""
   # -- Sync wave for the cluster CR

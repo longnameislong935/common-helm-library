@@ -11,6 +11,11 @@ metadata:
     - percona.com/delete-pxc-pods-in-order
 spec:
   crVersion: {{ .crVersion | default "1.20.0" }}
+  {{- /* When the operator is deployed via common-helm-library its container isn't
+     named `percona-xtradb-cluster-operator`, so the operator can't auto-discover
+     its own image for the DB init container ("operator image not found"). Set it
+     explicitly (defaults to the matching operator image). */}}
+  initImage: {{ .initImage | default (printf "percona/percona-xtradb-cluster-operator:%s" (.crVersion | default "1.20.0")) }}
   {{- if .secretsName }}
   secretsName: {{ .secretsName }}
   {{- end }}
