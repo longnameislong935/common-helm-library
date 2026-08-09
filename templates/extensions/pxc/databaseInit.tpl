@@ -11,9 +11,13 @@ kind: Job
 metadata:
   name: {{ $.Release.Name }}-pxc-init-db
   annotations:
-    # PostSync so it runs after the cluster is applied; recreated each sync.
-    argocd.argoproj.io/hook: PostSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    # Plain run-once Job on a wave AFTER the cluster (default 20). NOT a hook, so
+    # it doesn't re-run on every sync — it runs once, completes, and stays
+    # Completed. The container waits for MySQL internally, so it's fine that the
+    # DB isn't up at apply time. Replace=true lets the immutable Job be updated
+    # (delete+recreate) if you ever change its spec, without a sync error.
+    argocd.argoproj.io/sync-wave: {{ .databaseInitSyncWave | default "20" | quote }}
+    argocd.argoproj.io/sync-options: Replace=true
 spec:
   backoffLimit: {{ .databaseInitRetries | default 10 }}
   template:

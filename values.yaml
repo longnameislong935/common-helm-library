@@ -797,6 +797,8 @@ pxc:
   # -- Image with a mysql client for the init Job
   databaseInitImage: "mysql:8.4"
   databaseInitRetries: 10
+  # -- Sync wave for the run-once DB init Job (must be AFTER the cluster wave)
+  databaseInitSyncWave: "20"
 
   # -- Optional: name of the Secret holding system user passwords (operator
   # generates one if omitted)
