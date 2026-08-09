@@ -12,12 +12,12 @@ metadata:
   name: {{ $.Release.Name }}-pxc-init-db
   annotations:
     # Plain run-once Job on a wave AFTER the cluster (default 20). NOT a hook, so
-    # it doesn't re-run on every sync — it runs once, completes, and stays
-    # Completed. The container waits for MySQL internally, so it's fine that the
-    # DB isn't up at apply time. Replace=true lets the immutable Job be updated
-    # (delete+recreate) if you ever change its spec, without a sync error.
+    # it runs once, completes, and stays Completed — it won't re-run every sync.
+    # The container waits for MySQL internally, so it's fine that the DB isn't up
+    # at apply time. Do NOT add Replace=true: `kubectl replace` nulls the Job's
+    # auto-generated selector/labels (immutable) and the sync fails. Jobs are
+    # immutable anyway, so to change this spec, delete the Job and re-sync.
     argocd.argoproj.io/sync-wave: {{ .databaseInitSyncWave | default "20" | quote }}
-    argocd.argoproj.io/sync-options: Replace=true
 spec:
   backoffLimit: {{ .databaseInitRetries | default 10 }}
   template:
