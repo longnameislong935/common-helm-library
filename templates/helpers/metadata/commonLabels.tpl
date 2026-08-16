@@ -3,8 +3,8 @@ app.kubernetes.io/name: {{ .Release.Name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- with .Values.workload.image.tag }}
-app.kubernetes.io/version: {{ . }}
-helm.sh/chart: {{ $.Release.Name }}-{{ . | replace "+" "_" }}
+app.kubernetes.io/version: {{ . | quote }}
+helm.sh/chart: {{ printf "%s-%s" $.Release.Name (. | toString | replace "+" "_") | quote }}
 {{- else }}
 helm.sh/chart: {{ $.Release.Name }}
 {{- end }}
